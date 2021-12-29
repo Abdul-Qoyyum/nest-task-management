@@ -2,6 +2,7 @@ import { EntityRepository, Repository } from 'typeorm';
 import {
   ConflictException,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { User } from './user.entity';
@@ -28,5 +29,15 @@ export class UserRepository extends Repository<User> {
 
   private async hashPassword(password: string, salt: string): Promise<string> {
     return bcrypt.hash(password, salt);
+  }
+
+  async signIn(authCredentialsDto: AuthCredentialsDto): Promise<string> {
+    const { username, password } = authCredentialsDto;
+    const user = await this.findOne({ username });
+    if (user && (await user.validateUserPassword(password))) {
+      return user.username;
+    } else {
+      throw new NotFoundException('Invalid Credentials');
+    }
   }
 }
