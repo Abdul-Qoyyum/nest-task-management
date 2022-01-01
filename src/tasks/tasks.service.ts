@@ -35,12 +35,12 @@ export class TasksService {
     }
   }
 
-  // async updateTask(id: number, status: TaskStatus): Promise<Task> {
-  //   const task = await this.getTaskById(id);
-  //   task.status = status;
-  //   await task.save();
-  //   return task;
-  // }
+  async updateTask(id: number, status: TaskStatus, user: User): Promise<Task> {
+    const task = await this.getTaskById(id, user);
+    task.status = status;
+    await task.save();
+    return task;
+  }
 
   async createTask(createTaskDto: CreateTaskDto, user: User): Promise<Task> {
     return await this.taskRepository.createTask(createTaskDto, user);
